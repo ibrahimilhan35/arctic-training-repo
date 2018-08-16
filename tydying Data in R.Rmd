@@ -45,8 +45,8 @@ catch_df %>%
 catch_df <- catch_df %>% 
   select(-All, -notesRegCode)
   # select the other columns, not All and notesRegCode
-#head(catch_df)
-print(catch_df)
+head(catch_df)
+
 ```
 Move from wide to long format (using gather), and rename the cacth column to reflect units
 
