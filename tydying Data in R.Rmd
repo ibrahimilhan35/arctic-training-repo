@@ -66,7 +66,7 @@ catch_df$catch_thousands[i]
 [1] "I"
 
 1) turn "I" into 1 in the catch_thousands column
-2) covers catch_thousands into integer type
+2) coerce catch_thousands into integer type
 3) convert catch_thousands to catch
 
 ```{r}
@@ -79,4 +79,90 @@ tail(catch_df)
 
 ```
 
+# Split-Apply-Combine
+
+```{r}
+catch_summarized <- catch_df %>%
+  group_by(Region) %>%
+  summarise(mean_catch = mean(catch))
+
+head(catch_summarized)
+```
+```{r}
+catch_mean <- catch_df %>%
+  group_by(Region) %>%
+  summarise(catch_mean = mean(catch), catch_stdev = sd(catch))
+
+head(catch_mean)
+```
+
+
+```{r}
+catch_mean <- catch_df %>%
+  group_by(Region) %>%
+  # calculate mean, sd, n
+  summarise(catch_mean = mean(catch, na.rm = T), 
+            catch_stdev = sd(catch, na.rm = T), 
+            num_obs = n())
+
+head(catch_mean)
+```
+```{r}
+catch_mean <- catch_df %>%
+  group_by(Region, species) %>%
+  # calculate mean, sd, n
+  summarise(catch_mean = mean(catch, na.rm = T), 
+            catch_stdev = sd(catch, na.rm = T), 
+            num_obs = n())
+
+head(catch_mean)
+```
+
+```{r}
+catch_mean <- catch_df %>%
+  group_by(Region, species) %>%
+  # calculate mean, sd, n
+  summarise(catch_mean = mean(catch, na.rm = T), 
+            catch_stdev = sd(catch, na.rm = T), 
+            num_obs = n()) %>% 
+  # fileter for Chinook
+  filter(species == "Chinook") %>% 
+  filter(catch_mean > 2000)
+
+head(catch_mean)
+```
+
+```{r}
+catch_year <- catch_df %>%
+  filter(Year > 1990 & species == "Chinook") %>% 
+  # filter(Year > 1990 | Year < 1900) %>% 
+  group_by(Year, species) %>%
+  # calculate mean, sd, n
+  summarise(catch_sum = sum(catch))
+
+print(catch_year)
+```
+
+Reading region_defs data from website
+
+```{r}
+region_defs <- read.csv(url("https://knb.ecoinformatics.org/knb/d1/mn/v2/object/df35b.303.1", method = "libcurl"),
+                        stringsAsFactors = FALSE)
+head(region_defs)
+```
+
+```{r}
+region_defs <- region_defs %>% 
+  select(code, mgmtArea)
+
+  head(region_defs)
+```
+
+Merging two different files (catch_df and region_defs) based on Region and code columns, which contain the same information.. So the merged file has Region, and the code is removed/replacced. 
+
+```{r}
+catch_joined <- left_join(catch_df, region_defs, by = c("Region" = "code"))
+
+head(catch_joined)
+```
 
