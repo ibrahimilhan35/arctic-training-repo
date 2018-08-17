@@ -1,0 +1,50 @@
+---
+title: "ROpenSci"
+author: "Ibrahim Ilhan"
+date: "8/17/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+install.packages("fansi") #string formatting package
+install.packages("rfishbase")
+library("rfishbase")
+```
+```{r}
+fish <- c("Oreochromis niloticus", "Salmo trutta")
+fish
+```
+
+```{r}
+fish <- validate_names(c("Oreochromis niloticus", "Salmo trutta"))
+```
+```{r}
+fish <- species_list(Genus = "Labroides")
+fish
+```
+
+
+```{r}
+fish_common <- common_to_sci("trout")
+fish_common
+```
+
+```{r}
+install.packages("rnoaa")
+install.packages("ncdf4")
+```
+```{r}
+library(rnoaa)
+
+# Go here: http://www.ndbc.noaa.gov/
+# Find a station ID, like https://www.ndbc.noaa.gov/station_page.php?station=46080
+buoy(dataset = 'cwind', buoyid = 46080, year = 2016, datatype = "c")
+```
+```{r}
+bd <- buoy(dataset = 'cwind', buoyid = 46080, year = 2016, datatype = "c")
+plot(bd$data$wind_spd)
+```
